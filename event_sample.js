@@ -1,13 +1,3 @@
-# AWS EventBridge Schema Generator
-
-This is a schema generation for AWS EventBrige which is supported by [openapi](https://swagger.io/specification/)
-
-## How to use
-
-clone the repository and defines your event properties within js object like this
-
-```
-
 exports.events = [
     {
         screen: "splash_screen",
@@ -36,15 +26,3 @@ exports.events = [
         ]
     }
 ]
-
-```
-
-# Run
-
-```
-npm start
-```
-
-# Result
-
-Finally, the output you're found under schemas folder.
