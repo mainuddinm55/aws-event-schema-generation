@@ -47,4 +47,5 @@ npm start
 
 # Result
 
-Finally, the output you're found under schema's folder.
+Finally, the output you're found under schema's folder and found `Screen.kt` `Event.kt` `Param.kt` kotlin file for all
+constraint.
