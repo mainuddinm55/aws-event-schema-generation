@@ -19,15 +19,120 @@ function generateContent() {
             errorScreens.push(screen)
         } else {
             let content = getDefaultSchemaComponent(screen)
-            writeFile(screen.screen, content)
-            writeFile("error_events", JSON.stringify(errorEvents))
+            writeFile(screen.screen, 'json', content)
+            writeFile("error_events", 'json', JSON.stringify(errorEvents))
         }
     }
-    writeFile("error_screens", JSON.stringify(errorScreens))
+    writeFile("error_screens", 'json', JSON.stringify(errorScreens))
 }
 
-function writeFile(screen, content) {
-    fs.writeFile(`${filePath}/${screen}.json`, content, {flag: 'w+'}, err => {
+function generateKotlinConstraintClass() {
+    writeFile("Screen", "kt", getScreenConstraint(screens))
+    writeFile("Event", "kt", getEventConstraint(screens))
+    writeFile("Param", "kt", getParamConstraint(screens))
+}
+
+function getScreenConstraint(screens) {
+    let screenClass = `object Screen {
+    `
+    for (const screen of screens) {
+        if (screen.screen.length <= 40) {
+            screenClass = screenClass.concat(
+                `const val ${screen.screen.toUpperCase()} = "${screen.screen}"
+    `)
+        }
+    }
+    return screenClass.concat(`}`)
+}
+
+function getEventConstraint(screens) {
+    let eventClass = `object Event {
+    `
+    for (const screen of screens) {
+        for (const event of screen.event) {
+            if (event.name.length <= 40) {
+                eventClass = eventClass.concat(
+                    `const val ${event.name.toUpperCase()} = "${event.name}"
+    `
+                )
+            }
+        }
+    }
+
+    return eventClass.concat(`}`)
+}
+
+function getParamConstraint(screens) {
+    let paramClass = `object Param {
+    `
+    const defaultParams = JSON.parse(getDefaultParam())
+    for (let key of Object.keys(defaultParams)) {
+        paramClass = paramClass.concat(
+            `const val ${key.toUpperCase()} = "${key}"
+    `
+        )
+    }
+    for (const screen of screens) {
+        for (const event of screen.event) {
+            if (event.name.length <= 40) {
+                for (const property of event.properties) {
+                    paramClass = paramClass.concat(
+                        `const val ${property.name.toUpperCase()} = "${property.name}"
+    `
+                    )
+                }
+            }
+        }
+    }
+    return paramClass.concat(`}`)
+}
+
+function getDefaultParam() {
+    return `{
+          "screen": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "event_name": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "This is user id"
+          },
+          "is_premium": {
+            "type": "boolean"
+          },
+          "is_logged_in": {
+            "type": "boolean"
+          },
+          "user_region": {
+            "type": "string"
+          },
+          "user_ip": {
+            "type": "string"
+          },
+          "device_id": {
+            "type": "string"
+          },
+          "version_name": {
+            "type": "string"
+          },
+          "version_code": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+    }    
+        `
+}
+
+function writeFile(fileName, fileType = 'json', content) {
+    fs.writeFile(`${filePath}/${fileName}.${fileType}`, content, {flag: 'w+'}, err => {
         if (err) {
             console.log(`Writing file error: ${err}`)
             return
@@ -162,3 +267,4 @@ function getSchemas(screen) {
 }
 
 generateContent()
+generateKotlinConstraintClass(screens)
