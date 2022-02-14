@@ -1,4 +1,6 @@
 .idea
+/node_modules
 /gen
 /schemas
+/json
 events.js

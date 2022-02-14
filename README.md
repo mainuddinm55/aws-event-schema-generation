@@ -44,6 +44,7 @@ exports.events = [
 ```
 npm start
 ```
+browse `localhost:3000`
 
 # Result
 
